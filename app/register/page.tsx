@@ -13,8 +13,21 @@ export default function RegisterPage() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!name.trim() || !email.trim() || !password) {
-      alert('Por favor, preencha nome, email e senha.');
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+
+    if (trimmedName.length < 2) {
+      alert('Nome deve ter pelo menos 2 caracteres.');
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      alert('Email inválido.');
+      return;
+    }
+
+    if (password.length < 6) {
+      alert('Senha deve ter pelo menos 6 caracteres.');
       return;
     }
 
@@ -24,8 +37,8 @@ export default function RegisterPage() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        name: name.trim(),
-        email: email.trim(),
+        name: trimmedName,
+        email: trimmedEmail,
         password,
       }),
     });
@@ -36,7 +49,10 @@ export default function RegisterPage() {
       router.push('/login');
     } else {
       const data = await response.json();
-      alert(data.error || 'Falha ao cadastrar');
+      const errorMessage =
+        data.error ||
+        (data.issues ? data.issues.map((issue: any) => issue.message).join(' | ') : 'Falha ao cadastrar');
+      alert(errorMessage);
     }
   };
 
@@ -76,6 +92,7 @@ export default function RegisterPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              minLength={6}
               className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/90 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
               autoComplete="new-password"
             />

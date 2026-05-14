@@ -4,11 +4,19 @@ import { registerSchema } from '../../../../lib/validation/schemas';
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { success, data } = registerSchema.safeParse(body);
-  if (!success) return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
+  const result = registerSchema.safeParse(body);
+  if (!result.success) {
+    return NextResponse.json(
+      {
+        error: 'Invalid data',
+        issues: result.error.issues.map((issue) => ({ path: issue.path.join('.'), message: issue.message })),
+      },
+      { status: 400 }
+    );
+  }
 
   try {
-    const user = await createUser(data.email, data.password, data.name);
+    const user = await createUser(result.data.email, result.data.password, result.data.name);
     await assignRole(user.id, 'user'); // Atribuir role padrão
     return NextResponse.json({ user });
   } catch (error) {
