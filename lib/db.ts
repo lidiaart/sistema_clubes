@@ -10,10 +10,12 @@ db.pragma('foreign_keys = ON');
 export async function query<T = any>(text: string, params?: unknown[]): Promise<{ rows: T[] }> {
   try {
     const stmt = db.prepare(text);
-    if (text.trim().toUpperCase().startsWith('SELECT') || text.trim().toUpperCase().startsWith('PRAGMA')) {
-      return { rows: stmt.all(params) } as { rows: T[] };
+    const isSelect = text.trim().toUpperCase().startsWith('SELECT') || text.trim().toUpperCase().startsWith('PRAGMA');
+
+    if (isSelect) {
+      return { rows: params ? stmt.all(params) : stmt.all() } as { rows: T[] };
     } else {
-      const result = stmt.run(params);
+      const result = params ? stmt.run(params) : stmt.run();
       return { rows: [{ ...result, insertId: result.lastInsertRowid }] } as { rows: T[] };
     }
   } catch (error) {
