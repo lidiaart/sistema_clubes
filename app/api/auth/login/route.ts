@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db';
-import { verifyPassword, createSessionToken, SESSION_COOKIE_NAME } from '@/lib/auth';
+import { verifyPassword } from '@/lib/db/queries/users';
+import { createSessionToken, SESSION_COOKIE_NAME } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
