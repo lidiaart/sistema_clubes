@@ -8,7 +8,6 @@ export default function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [profilePictureUrl, setProfilePictureUrl] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -28,7 +27,6 @@ export default function RegisterPage() {
         name: name.trim(),
         email: email.trim(),
         password,
-        profile_picture_url: profilePictureUrl.trim() || null,
       }),
     });
 
@@ -80,16 +78,6 @@ export default function RegisterPage() {
               onChange={(e) => setPassword(e.target.value)}
               className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/90 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
               autoComplete="new-password"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-300">URL da foto de perfil (opcional)</label>
-            <input
-              type="url"
-              value={profilePictureUrl}
-              onChange={(e) => setProfilePictureUrl(e.target.value)}
-              className="mt-2 w-full rounded-2xl border border-slate-700 bg-slate-950/90 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
-              placeholder="https://..."
             />
           </div>
           <button

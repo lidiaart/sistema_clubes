@@ -14,7 +14,6 @@ export default function ProfilePage() {
   const [user, setUser] = useState<UserData | null>(null);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [profilePictureUrl, setProfilePictureUrl] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -29,7 +28,6 @@ export default function ProfilePage() {
         setUser(data);
         setName(data.name || '');
         setEmail(data.email || '');
-        setProfilePictureUrl(data.profile_picture_url || '');
       })
       .catch(() => setUser(null))
       .finally(() => setLoading(false));
@@ -51,7 +49,6 @@ export default function ProfilePage() {
       body: JSON.stringify({
         name: name.trim(),
         email: email.trim(),
-        profile_picture_url: profilePictureUrl.trim() || null,
         password: password || undefined,
       }),
     });
@@ -108,16 +105,6 @@ export default function ProfilePage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-slate-900 focus:border-slate-900 focus:outline-none"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700">URL da imagem</label>
-            <input
-              type="url"
-              value={profilePictureUrl}
-              onChange={(e) => setProfilePictureUrl(e.target.value)}
-              placeholder="https://..."
               className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-slate-900 focus:border-slate-900 focus:outline-none"
             />
           </div>

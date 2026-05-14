@@ -61,9 +61,15 @@ export default function Navbar() {
           )}
           {!loading && user && (
             <>
-              <Link href="/profile" className="text-slate-600 hover:text-slate-900">
-                Olá, {user.name.split(' ')[0]}
+              <Link href="/dashboard" className="text-slate-600 hover:text-slate-900">
+                Dashboard
               </Link>
+              <Link href="/profile" className="text-slate-600 hover:text-slate-900">
+                Perfil
+              </Link>
+              <span className="rounded-full bg-slate-100 px-3 py-2 text-slate-800 text-sm">
+                {user.name.split(' ')[0]}
+              </span>
               <button
                 type="button"
                 onClick={handleLogout}
