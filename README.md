@@ -1,53 +1,122 @@
 # Sistema de Gestão de Clubes
 
-Um sistema web moderno para gerenciar clubes da universidade, desenvolvido com Next.js e PostgreSQL.
+## 🚀 Configuração Inicial
 
-## Funcionalidades
+### 1. Instalar Dependências
+```bash
+npm install
+```
 
-### Clubes
-- ✅ Criar novos clubes
-- ✅ Listar todos os clubes
-- ✅ Ver detalhes de um clube específico
+### 2. Configurar Banco de Dados
+```bash
+# Inicializar banco SQLite com tabelas
+npm run init-db-sqlite
 
-### Membros
-- ✅ Entrar em um clube
-- ✅ Listar membros de um clube
+# Criar conta de administrador do sistema
+npm run seed-admin
+```
 
-### Eventos
-- ✅ Criar eventos para um clube
-- ✅ Inscrever-se em eventos
-- ✅ Listar eventos por clube
+### 3. Configurar Variáveis de Ambiente
+Edite o arquivo `.env` com suas configurações:
 
-## Tecnologias Utilizadas
+```env
+# Banco de dados (SQLite)
+DATABASE_URL="sqlite://./database.db"
 
-- **Frontend + Backend**: Next.js 16
-- **Banco de Dados**: PostgreSQL
-- **Linguagem**: TypeScript
-- **Styling**: Tailwind CSS
-- **Controle de Versão**: GitHub
+# NextAuth
+NEXTAUTH_SECRET=sua-chave-secreta-aqui
 
-## Estrutura do Banco
+# Conta de Administrador do Sistema
+ADMIN_EMAIL=admin@sistema.com
+ADMIN_PASSWORD=admin123
+ADMIN_NAME=Administrador Sistema
+```
 
-```sql
--- Clubes
-CREATE TABLE clubs (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  category VARCHAR(100),
-  description TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+### 4. Executar o Projeto
+```bash
+npm run dev
+```
 
--- Membros
-CREATE TABLE members (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  email VARCHAR(255) UNIQUE NOT NULL,
-  club_id INTEGER REFERENCES clubs(id) ON DELETE CASCADE,
-  joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+## 👤 Conta de Administrador
 
--- Eventos
+Após a configuração inicial, você terá uma conta de administrador com:
+
+- **Email:** `admin@sistema.com` (ou o definido em ADMIN_EMAIL)
+- **Senha:** `admin123` (ou o definido em ADMIN_PASSWORD)
+
+⚠️ **IMPORTANTE:** Altere a senha após o primeiro login!
+
+### Permissões do Admin do Sistema:
+- ✅ Criar e gerenciar todos os clubes
+- ✅ Aprovar/rejeitar pedidos de admin de clube
+- ✅ Aprovar/rejeitar pedidos de entrada em clube
+- ✅ Visualizar estatísticas globais do sistema
+- ✅ Gerenciar usuários (futuro)
+
+## 🔐 Sistema de Autenticação
+
+### Tipos de Usuários:
+1. **Admin do Sistema** - Controle total
+2. **Admin de Clube** - Gerencia clube específico
+3. **Usuário Normal** - Membro de clubes
+
+### Funcionalidades:
+- ✅ Registro de usuários
+- ✅ Login/logout
+- ✅ Controle de permissões baseado em roles
+- ✅ Rotas protegidas por middleware
+
+## 📊 Dashboard
+
+O dashboard mostra estatísticas diferentes baseado no tipo de usuário:
+
+- **Admin Sistema:** Todos os clubes, usuários, pedidos pendentes
+- **Admin Clube:** Seu clube, membros, eventos
+- **Usuário:** Clubes que participa, eventos disponíveis
+
+## 🛠️ Scripts Disponíveis
+
+```bash
+npm run dev          # Iniciar servidor de desenvolvimento
+npm run build        # Build para produção
+npm run start        # Iniciar servidor de produção
+npm run lint         # Executar linter
+npm run init-db-sqlite  # Inicializar banco SQLite
+npm run seed-admin   # Criar conta admin (se não existir)
+npm run reset-db     # Resetar banco completamente e recriar admin
+```
+
+## 🗄️ Estrutura do Banco
+
+### Tabelas Principais:
+- `users` - Usuários do sistema
+- `roles` - Roles (admin_system, admin_club, user)
+- `user_roles` - Relacionamento usuário-role
+- `clubs` - Clubes
+- `members` - Membros dos clubes
+- `events` - Eventos dos clubes
+- `requests_admin_club` - Pedidos para virar admin de clube
+- `requests_join_club` - Pedidos para entrar em clube
+
+## 🔧 Desenvolvimento
+
+### Tecnologias:
+- **Next.js 16** (App Router)
+- **SQLite** (banco de dados)
+- **NextAuth.js** (autenticação)
+- **Tailwind CSS** + **shadcn/ui** (interface)
+- **TypeScript** (tipagem)
+- **Zod** (validação)
+
+### Estrutura de Pastas:
+```
+/
+├── app/                 # Páginas e APIs Next.js
+├── lib/                 # Utilitários e configurações
+├── components/          # Componentes React
+├── scripts/            # Scripts de configuração
+└── public/             # Arquivos estáticos
+```
 CREATE TABLE events (
   id SERIAL PRIMARY KEY,
   title VARCHAR(255) NOT NULL,

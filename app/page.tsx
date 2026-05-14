@@ -1,27 +1,31 @@
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../lib/auth/config';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession(authOptions);
+  if (session) {
+    redirect('/dashboard');
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-      <div className="max-w-2xl mx-auto text-center px-4">
-        <h1 className="text-5xl font-bold text-gray-900 mb-6">
-          Sistema de Gestão de Clubes
-        </h1>
-        <p className="text-xl text-gray-600 mb-8">
-          Gerencie clubes da universidade, membros e eventos de forma simples e eficiente.
+    <div className="min-h-screen bg-[#0B1F33] text-[#F7F7F7] flex items-center justify-center">
+      <div className="text-center px-4">
+        <h1 className="text-5xl font-bold text-[#E68A2E] mb-4">Bem-vindo ao Quorum</h1>
+        <p className="text-lg text-[#F7F7F7] max-w-xl mx-auto mb-8">
+          Plataforma moderna para gerenciar clubes, eventos e membros com segurança e design premium.
         </p>
-        <div className="space-y-4">
-          <Link
-            href="/clubes"
-            className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-          >
-            Ver Clubes
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link href="/login" className="inline-flex items-center justify-center rounded-full bg-[#E68A2E] px-6 py-3 text-white font-semibold shadow-lg hover:bg-[#d57a1e] transition">
+            Entrar
           </Link>
-          <p className="text-sm text-gray-500">
-            Desenvolvido com Next.js e PostgreSQL
-          </p>
+          <Link href="/register" className="inline-flex items-center justify-center rounded-full border border-[#E68A2E] px-6 py-3 text-[#F7F7F7] font-semibold hover:bg-white/10 transition">
+            Criar conta
+          </Link>
         </div>
       </div>
     </div>
   );
 }
+

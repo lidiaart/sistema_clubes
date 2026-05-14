@@ -8,7 +8,7 @@ const pool = new Pool({
 
 async function initDB() {
   try {
-    const schemaPath = path.join(__dirname, '..', 'schema.sql');
+    const schemaPath = path.join(__dirname, '..', 'database.sql');
     const schema = fs.readFileSync(schemaPath, 'utf8');
 
     await pool.query(schema);

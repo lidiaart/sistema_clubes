@@ -1,0 +1,1 @@
+// Extensões futuras para providers/callbacks

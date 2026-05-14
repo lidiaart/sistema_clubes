@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import pool from '@/lib/db';
+import { query } from '@/lib/db';
+import { getSessionUser } from '@/lib/auth';
 
 export async function GET(
   request: NextRequest,
@@ -8,8 +9,8 @@ export async function GET(
   try {
     const { id: clubId } = await params;
 
-    const result = await pool.query(
-      'SELECT id, name, email, joined_at FROM members WHERE club_id = $1 ORDER BY joined_at DESC',
+    const result = await query(
+      'SELECT m.id, u.name, u.email, m.joined_at FROM memberships m JOIN users u ON u.id = m.user_id WHERE m.club_id = $1 ORDER BY m.joined_at DESC',
       [clubId]
     );
 
@@ -25,36 +26,42 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const user = await getSessionUser(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    }
+
     const { id: clubId } = await params;
-    const { name, email } = await request.json();
 
-    if (!name || !email) {
-      return NextResponse.json({ error: 'Name and email are required' }, { status: 400 });
-    }
-
-    // Check if club exists
-    const clubResult = await pool.query('SELECT id FROM clubs WHERE id = $1', [clubId]);
+    const clubResult = await query('SELECT id FROM clubs WHERE id = $1', [clubId]);
     if (clubResult.rows.length === 0) {
-      return NextResponse.json({ error: 'Club not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Clube não encontrado' }, { status: 404 });
     }
 
-    // Check if member already exists in this club
-    const existingMember = await pool.query(
-      'SELECT id FROM members WHERE email = $1 AND club_id = $2',
-      [email, clubId]
+    const existingMembership = await query(
+      'SELECT id FROM memberships WHERE user_id = $1 AND club_id = $2',
+      [user.id, clubId]
     );
-    if (existingMember.rows.length > 0) {
-      return NextResponse.json({ error: 'Member already in this club' }, { status: 400 });
+    if (existingMembership.rows.length > 0) {
+      return NextResponse.json({ error: 'Você já é membro deste clube' }, { status: 400 });
     }
 
-    const result = await pool.query(
-      'INSERT INTO members (name, email, club_id) VALUES ($1, $2, $3) RETURNING *',
-      [name, email, clubId]
+    const result = await query(
+      'INSERT INTO memberships (user_id, club_id) VALUES ($1, $2) RETURNING id, joined_at',
+      [user.id, clubId]
     );
 
-    return NextResponse.json(result.rows[0], { status: 201 });
+    return NextResponse.json(
+      {
+        id: result.rows[0].id,
+        name: user.name,
+        email: user.email,
+        joined_at: result.rows[0].joined_at,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error('Error joining club:', error);
-    return NextResponse.json({ error: 'Failed to join club' }, { status: 500 });
+    return NextResponse.json({ error: 'Falha ao entrar no clube' }, { status: 500 });
   }
 }
